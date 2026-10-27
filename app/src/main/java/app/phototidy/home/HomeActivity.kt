@@ -247,7 +247,7 @@ class HomeActivity : ComponentActivity() {
 
 // ======================================================================= UI
 
-private val onWallpaper = TextStyle(
+private val wallpaperText = TextStyle(
     color = Color.White,
     fontSize = 12.sp,
     shadow = Shadow(Color.Black.copy(alpha = 0.6f), blurRadius = 6f),
@@ -277,7 +277,7 @@ private fun AppTile(app: LaunchApp, onClick: () -> Unit, onLongClick: () -> Unit
             Spacer(Modifier.height(4.dp))
             Text(
                 app.label,
-                style = if (dark) MaterialTheme.typography.labelMedium.copy(fontFamily = null) else onWallpaper,
+                style = if (dark) MaterialTheme.typography.labelMedium.copy(fontFamily = null) else wallpaperText,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center,
@@ -310,7 +310,7 @@ private fun FolderTile(folder: HomeFolder, apps: List<LaunchApp>, onClick: () ->
             }
         }
         Spacer(Modifier.height(4.dp))
-        Text(folder.title, style = onWallpaper, maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
+        Text(folder.title, style = wallpaperText, maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
     }
 }
 
@@ -387,10 +387,10 @@ private fun HomeUi(
                 }
                 if (editWidgets) {
                     TextButton(onClick = { sheet = Sheet.WidgetPicker }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
-                        Text("+ Add widget", style = onWallpaper.copy(fontSize = 15.sp))
+                        Text("+ Add widget", style = wallpaperText.copy(fontSize = 15.sp))
                     }
                     TextButton(onClick = { editWidgets = false }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
-                        Text("Done", style = onWallpaper.copy(fontSize = 15.sp))
+                        Text("Done", style = wallpaperText.copy(fontSize = 15.sp))
                     }
                 }
             }
@@ -416,7 +416,7 @@ private fun HomeUi(
             // ---- swipe hint + dock ----
             Text(
                 "︿  all apps",
-                style = onWallpaper.copy(fontSize = 11.sp),
+                style = wallpaperText.copy(fontSize = 11.sp),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .clip(RoundedCornerShape(8.dp))
