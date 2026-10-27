@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_folder_name">Smart folder</string>
+    <string name="widget_folder_desc">One folder (Chats, Money, Media…) that fills itself, most-used apps first</string>
+    <string name="widget_dashboard_name">App dashboard</string>
+    <string name="widget_dashboard_desc">Your most-used apps on top, every other app grouped by type below</string>
+</resources>
