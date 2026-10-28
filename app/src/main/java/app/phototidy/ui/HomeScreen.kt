@@ -36,6 +36,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.phototidy.data.AppPlan
 import app.phototidy.data.FilePlan
+import app.phototidy.data.HealthPlan
+import app.phototidy.data.WhatsAppPlan
 import app.phototidy.data.Plan
 
 data class ScanStatus(val running: Boolean, val done: Int, val total: Int, val phase: String = "photos")
@@ -71,6 +73,11 @@ fun HomeScreen(
     appsEnabled: Boolean = false,
     onOpenApps: () -> Unit = {},
     onSetHome: () -> Unit = {},
+    whatsApp: WhatsAppPlan = WhatsAppPlan.EMPTY,
+    health: HealthPlan = HealthPlan.EMPTY,
+    onOpenWhatsApp: () -> Unit = {},
+    onOpenPrivacy: () -> Unit = {},
+    onOpenBattery: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val isDefaultHome = context.packageManager.resolveActivity(
@@ -225,6 +232,60 @@ fun HomeScreen(
                         modifier = Modifier.weight(1f),
                     )
                 }
+            }
+        }
+
+        // ---- WhatsApp ----
+        if (filesEnabled && perms.hasFileAccess && whatsApp.found) {
+            Panel {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        SectionLabel("WhatsApp")
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            Formatter.formatShortFileSize(context, whatsApp.totalBytes) + " of media",
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Text(
+                            "Statuses, stickers, sent copies, old videos…",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    OutlinedButton(
+                        onClick = onOpenWhatsApp,
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
+                    ) { Text("Clean up") }
+                }
+            }
+        }
+
+        // ---- privacy + battery ----
+        if (appsEnabled) {
+            SectionLabel("Phone health", Modifier.padding(start = 4.dp, top = 4.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                BigTile(
+                    label = "Privacy check",
+                    number = health.privacy.size,
+                    sub = if (health.privacy.isEmpty()) "looks fine" else "apps to check",
+                    onClick = onOpenPrivacy,
+                    accent = health.privacy.isNotEmpty(),
+                    alwaysClickable = true,
+                    modifier = Modifier.weight(1f),
+                )
+                BigTile(
+                    label = "Battery drainers",
+                    number = health.battery.size,
+                    sub = when {
+                        !health.usageAccess -> "needs usage access"
+                        health.battery.isEmpty() -> "all good"
+                        else -> "this week"
+                    },
+                    onClick = onOpenBattery,
+                    accent = health.battery.isNotEmpty(),
+                    alwaysClickable = true,
+                    modifier = Modifier.weight(1f),
+                )
             }
         }
 

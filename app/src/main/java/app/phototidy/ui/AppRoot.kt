@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import app.phototidy.data.AppEntry
 import app.phototidy.work.ScanWorker
 
-enum class Screen { HOME, SORT, JUNK, SETTINGS, FILE_SORT, FILE_JUNK, FILE_TRASH, APPS }
+enum class Screen { HOME, SORT, JUNK, SETTINGS, FILE_SORT, FILE_JUNK, FILE_TRASH, APPS, WHATSAPP, PRIVACY, BATTERY }
 
 @Composable
 fun AppRoot(
@@ -39,6 +39,8 @@ fun AppRoot(
     onAppSettings: (AppEntry) -> Unit,
     onAllowUsage: () -> Unit,
     onSetHome: () -> Unit = {},
+    onOpenAppPkg: (String) -> Unit = {},
+    onBatterySettings: () -> Unit = {},
 ) {
     var screen by rememberSaveable { mutableStateOf(Screen.HOME) }
     val plan by vm.plan.collectAsState()
@@ -55,6 +57,8 @@ fun AppRoot(
     val appPlan by vm.appPlan.collectAsState()
     val appsLoading by vm.appsLoading.collectAsState()
     val appsEnabled by vm.appsEnabled.collectAsState()
+    val whatsApp by vm.whatsApp.collectAsState()
+    val health by vm.health.collectAsState()
 
     val info = workInfos.firstOrNull { !it.state.isFinished }
     val scan = ScanStatus(
@@ -109,6 +113,32 @@ fun AppRoot(
                     appsEnabled = appsEnabled,
                     onOpenApps = { screen = Screen.APPS },
                     onSetHome = onSetHome,
+                    whatsApp = whatsApp,
+                    health = health,
+                    onOpenWhatsApp = { screen = Screen.WHATSAPP },
+                    onOpenPrivacy = { screen = Screen.PRIVACY },
+                    onOpenBattery = { screen = Screen.BATTERY },
+                )
+                Screen.WHATSAPP -> WhatsAppScreen(
+                    plan = whatsApp,
+                    hasFileAccess = perms.hasFileAccess,
+                    busy = busy,
+                    onBack = { screen = Screen.HOME },
+                    onAllowFiles = onAllowFiles,
+                    onClean = vm::cleanWhatsApp,
+                )
+                Screen.PRIVACY -> PrivacyScreen(
+                    plan = health,
+                    onBack = { screen = Screen.HOME },
+                    onOpenApp = onOpenAppPkg,
+                    onAllowUsage = onAllowUsage,
+                )
+                Screen.BATTERY -> BatteryScreen(
+                    plan = health,
+                    onBack = { screen = Screen.HOME },
+                    onOpenApp = onOpenAppPkg,
+                    onAllowUsage = onAllowUsage,
+                    onBatterySettings = onBatterySettings,
                 )
                 Screen.APPS -> AppsScreen(
                     plan = appPlan,

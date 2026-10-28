@@ -12,7 +12,12 @@ import androidx.work.WorkManager
 import app.phototidy.core.Sensitivity
 import app.phototidy.data.AppPlan
 import app.phototidy.data.AppRepo
+import app.phototidy.core.WaFile
 import app.phototidy.data.FilePlaces
+import app.phototidy.data.HealthPlan
+import app.phototidy.data.HealthRepo
+import app.phototidy.data.WhatsAppPlan
+import app.phototidy.data.WhatsAppScanner
 import app.phototidy.data.FilePlan
 import app.phototidy.data.FilePlanner
 import app.phototidy.data.FileRepo
@@ -80,8 +85,52 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
             }
             refreshFilesNow()
             refreshAppsNow()
+            refreshHealthNow()
+            refreshWhatsAppNow()
             lastScanMs.value = settings.lastScanMs
             _loading.value = false
+        }
+    }
+
+    private val _whatsApp = MutableStateFlow(WhatsAppPlan.EMPTY)
+    val whatsApp = _whatsApp.asStateFlow()
+    private val _health = MutableStateFlow(HealthPlan.EMPTY)
+    val health = _health.asStateFlow()
+
+    private suspend fun refreshHealthNow() {
+        _health.value = withContext(Dispatchers.IO) {
+            try { HealthRepo(ctx).load() } catch (e: Exception) { HealthPlan.EMPTY }
+        }
+    }
+
+    private suspend fun refreshWhatsAppNow() {
+        _whatsApp.value = withContext(Dispatchers.IO) {
+            if (!settings.filesEnabled) WhatsAppPlan.EMPTY
+            else try { WhatsAppScanner.scan() } catch (e: Exception) { WhatsAppPlan.EMPTY }
+        }
+    }
+
+    fun refreshHealth() { viewModelScope.launch { refreshHealthNow() } }
+
+    /** WhatsApp clean-up: to the app's trash (restorable) or deleted right away. */
+    fun cleanWhatsApp(files: List<WaFile>, now: Boolean) {
+        viewModelScope.launch {
+            _busy.value = true
+            val msg = withContext(Dispatchers.IO) {
+                try {
+                    if (now) {
+                        val freed = WhatsAppScanner.deleteNow(ctx, files)
+                        "Freed " + android.text.format.Formatter.formatShortFileSize(ctx, freed)
+                    } else {
+                        val n = FileTrash(ctx).trash(files.map { java.io.File(it.path) })
+                        "$n files moved to trash (restorable for 30 days)"
+                    }
+                } catch (e: Exception) { "Something went wrong: ${e.message}" }
+            }
+            _busy.value = false
+            _message.value = msg
+            refreshWhatsAppNow()
+            refreshFilesNow()
         }
     }
 

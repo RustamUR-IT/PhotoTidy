@@ -12,8 +12,8 @@ android {
         applicationId = "app.phototidy"
         minSdk = 30          // Android 11+ (Nothing Phone 3a runs Android 15)
         targetSdk = 35
-        versionCode = 4
-        versionName = "1.3"
+        versionCode = 5
+        versionName = "1.4"
 
         // Only include code for 64-bit ARM chips (the Nothing Phone 3a and nearly every
         // phone from the last years). Keeps the app ~4x smaller.

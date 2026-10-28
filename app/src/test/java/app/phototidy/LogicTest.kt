@@ -12,5 +12,6 @@ class LogicTest {
     @Test fun files() { app.phototidy.checks.file.main(); assertEquals(0, app.phototidy.checks.file.fails) }
     @Test fun apps() { app.phototidy.checks.apps.main(); assertEquals(0, app.phototidy.checks.apps.fails) }
     @Test fun homeFolders() { app.phototidy.checks.home.main(); assertEquals(0, app.phototidy.checks.home.fails) }
+    @Test fun health() { app.phototidy.checks.health.main(); assertEquals(0, app.phototidy.checks.health.fails) }
     @Test fun widgets() { app.phototidy.checks.widget.main(); assertEquals(0, app.phototidy.checks.widget.fails) }
 }

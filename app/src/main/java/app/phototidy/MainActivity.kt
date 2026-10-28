@@ -131,6 +131,11 @@ class MainActivity : ComponentActivity() {
                     onAppSettings = { openAppSettings(it.pkg) },
                     onAllowUsage = ::openUsageAccess,
                     onSetHome = { startActivity(Intent(AndroidSettings.ACTION_HOME_SETTINGS)) },
+                    onOpenAppPkg = ::openAppSettings,
+                    onBatterySettings = {
+                        try { startActivity(Intent(AndroidSettings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)) }
+                        catch (_: Exception) { startActivity(Intent(AndroidSettings.ACTION_SETTINGS)) }
+                    },
                 )
             }
         }
@@ -140,7 +145,7 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         updatePerms()
         // Coming back from Settings (disabled an app, granted usage access): refresh the app list.
-        if (resumedOnce && uninstallQueue.isEmpty()) vm.refreshApps()
+        if (resumedOnce && uninstallQueue.isEmpty()) { vm.refreshApps(); vm.refreshHealth() }
         try { app.phototidy.home.SmartWidgets.refreshAll(this) } catch (_: Exception) {}
         resumedOnce = true
     }
