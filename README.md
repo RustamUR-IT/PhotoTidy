@@ -72,5 +72,5 @@ Every time the code changes, a new build appears on the Releases page and instal
 
 - Android 11 or newer. Built for the Nothing Phone 3a (Android 15).
 - Images inside other apps' private folders are never moved, so those apps keep working.
-- `app/phototidy.keystore` is the signing key that lets updates install over the old version.
+- The signing key that lets updates install over the old version is not in the repo: GitHub Actions restores it from repository secrets, and a local build reads it from the `RELEASE_KEYSTORE_FILE`, `RELEASE_KEYSTORE_PASSWORD`, `RELEASE_KEY_ALIAS` and `RELEASE_KEY_PASSWORD` environment variables.
   Keep the repository private.
