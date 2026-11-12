@@ -4,3 +4,10 @@ app/build/
 local.properties
 .idea/
 *.iml
+
+# Signing keys and their passwords never belong in the repo
+*.jks
+*.keystore
+*.p12
+*.password.txt
+keystore.properties
